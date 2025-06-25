@@ -1,41 +1,47 @@
-const input = document.querySelector('.input-main');
-const button = document.querySelector('.btn-main');
-const errorMsg = document.querySelector('.error-msg');
-const correctMsg = document.querySelector('.correct-msg');
+(() => {
+  const $ = (sel) => document.querySelector(sel);
+  const clearText = (el) => (el.textContent = '');
 
-function toggleButton() {
-  button.disabled = input.value.trim() === '';
-  if (errorMsg.dataset.keep !== 'true') {
-    errorMsg.textContent = '';
-    correctMsg.textContent = '';
-  }
-}
+  const input = $('.input-main');
+  const button = $('.btn-main');
+  const errorMsg = $('.error-msg');
+  const correctMsg = $('.correct-msg');
 
-input.addEventListener('input', () => {
-  errorMsg.textContent = '';
-  errorMsg.dataset.keep = 'false';
-  correctMsg.textContent = '';
-  toggleButton();
-});
+  const CORRECT_PASSWORD = 'FVoq1+qnZLbHyhsghePWtW+Lh/oRHhLBzWXHnozYLe1i83vL6ruyeQ==';
 
-button.addEventListener('click', () => {
-  if (input.value === 'FVoq1+qnZLbHyhsghePWtW+Lh/oRHhLBzWXHnozYLe1i83vL6ruyeQ==') {
-    correctMsg.textContent = 'correct password!';
-    errorMsg.textContent = '';
+  const updateButtonState = () => {
+    button.disabled = !input.value.trim();
+  };
+
+  const resetMessages = () => {
+    clearText(errorMsg);
+    clearText(correctMsg);
     errorMsg.dataset.keep = 'false';
-  } else {
-    errorMsg.textContent = 'wrong password!';
-    errorMsg.dataset.keep = 'true';
-    correctMsg.textContent = '';
-    input.value = '';
-    toggleButton();
-  }
-});
+  };
 
-input.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter' && !button.disabled) {
-    button.click();
-  }
-});
+  input.addEventListener('input', () => {
+    resetMessages();
+    updateButtonState();
+  });
 
-toggleButton();
+  input.addEventListener('keydown', ({ key }) => {
+    if (key === 'Enter' && !button.disabled) button.click();
+  });
+
+  button.addEventListener('click', () => {
+    const isCorrect = input.value === CORRECT_PASSWORD;
+
+    resetMessages();
+
+    if (isCorrect) {
+      correctMsg.textContent = 'correct password!';
+    } else {
+      errorMsg.textContent = 'wrong password!';
+      errorMsg.dataset.keep = 'true';
+      input.value = '';
+      updateButtonState();
+    }
+  });
+
+  updateButtonState();
+})();
